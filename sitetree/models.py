@@ -6,7 +6,6 @@ from django.utils.encoding import python_2_unicode_compatible
 
 from .settings import MODEL_TREE, TREE_ITEMS_ALIASES
 
-
 # This allows South to handle our custom 'CharFieldNullable' field.
 if 'south' in settings.INSTALLED_APPS:
     from south.modelsinspector import add_introspection_rules
@@ -46,6 +45,11 @@ class TreeBase(models.Model):
 
     def __str__(self):
         return self.alias
+
+    def delete(self, using=None, keep_parents=False):
+        from sitetreeapp import Cache
+        Cache().empty()
+        return super(TreeBase, self).delete()
 
 
 @python_2_unicode_compatible
@@ -144,6 +148,11 @@ class TreeItemBase(models.Model):
         if self.sort_order == 0:
             self.sort_order = self.id
             self.save()
+
+    def delete(self, using=None, keep_parents=False):
+        from sitetreeapp import Cache
+        Cache().empty()
+        return super(TreeItemBase, self).delete()
 
     class Meta(object):
         abstract = True
