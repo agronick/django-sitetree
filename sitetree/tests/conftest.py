@@ -46,7 +46,7 @@ def pytest_configure():
     settings.configure(**configure_kwargs)
 
 
-class MockUser(object):
+class MockUser:
 
     def __init__(self, user_data):
         authorized = user_data
@@ -65,7 +65,7 @@ class MockUser(object):
         return self.permissions
 
 
-class MockRequest(object):
+class MockRequest:
 
     def __init__(self, path='/', user=None, meta=None):
         self.path = path

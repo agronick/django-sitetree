@@ -7,7 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding field 'TreeItem.access_restricted'
         db.add_column('sitetree_treeitem', 'access_restricted', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True), keep_default=False)
 
@@ -24,7 +24,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # Deleting field 'TreeItem.access_restricted'
         db.delete_column('sitetree_treeitem', 'access_restricted')
 

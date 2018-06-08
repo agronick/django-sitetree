@@ -1,6 +1,6 @@
 from django.conf import settings as django_settings
 from django import VERSION as django_version
-from django.core.urlresolvers import get_urlconf, get_resolver
+from django.urls import get_urlconf, get_resolver
 from django.utils.translation import ugettext_lazy as _
 from django.utils import six
 from django.http import HttpResponseRedirect
@@ -8,6 +8,8 @@ from django.contrib import admin
 from django.contrib.admin.sites import NotRegistered
 from django.contrib import messages
 from django.conf.urls import url
+
+from SupportLink import helpers
 
 DJANGO_POST_19 = django_version >= (1, 9, 0)
 
@@ -150,6 +152,7 @@ class TreeItemAdmin(admin.ModelAdmin):
 
         my_choice_field = TreeItemChoiceField(self.tree, initial=previous_parent_id)
         form = super(TreeItemAdmin, self).get_form(request, obj, **kwargs)
+
         my_choice_field.label = form.base_fields['parent'].label
         my_choice_field.help_text = form.base_fields['parent'].help_text
         # Replace 'parent' TreeItem field with new appropriate one

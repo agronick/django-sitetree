@@ -1,5 +1,5 @@
 #! -*- encoding: utf-8 -*-
-from __future__ import unicode_literals
+
 import pytest
 from django.template.base import TemplateSyntaxError
 

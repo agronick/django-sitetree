@@ -1,5 +1,5 @@
 from django import template
-from django.template.loader import get_template
+from django.template.loader import get_template, render_to_string
 from django.template.base import FilterExpression
 
 from ..sitetreeapp import get_sitetree
@@ -273,7 +273,7 @@ class sitetree_page_hintNode(SimpleNode):
 
     def get_value(self, context):
         return get_sitetree().get_current_page_attr('hint', self.item, context)
-    
+
 
 def detect_clause(parser, clause_name, tokens):
     """Helper function detects a certain clause in tag tokens list.
@@ -300,7 +300,7 @@ def render(context, tree_items, use_template):
     if isinstance(use_template, FilterExpression):
         use_template = use_template.resolve(context)
 
-    content = get_template(use_template).render(context)
+    content = render_to_string(use_template, context.flatten())
     context.pop()
 
     return content

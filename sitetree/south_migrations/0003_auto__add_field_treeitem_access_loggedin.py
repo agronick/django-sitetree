@@ -7,13 +7,13 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding field 'TreeItem.access_loggedin'
         db.add_column('sitetree_treeitem', 'access_loggedin', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True), keep_default=False)
 
 
     def backwards(self, orm):
-        
+
         # Deleting field 'TreeItem.access_loggedin'
         db.delete_column('sitetree_treeitem', 'access_loggedin')
 

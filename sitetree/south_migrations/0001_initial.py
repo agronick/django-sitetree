@@ -7,7 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'Tree'
         db.create_table('sitetree_tree', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -39,7 +39,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # Removing unique constraint on 'TreeItem', fields ['tree', 'alias']
         db.delete_unique('sitetree_treeitem', ['tree_id', 'alias'])
 

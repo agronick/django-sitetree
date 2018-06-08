@@ -6,11 +6,6 @@ from django.utils.encoding import python_2_unicode_compatible
 
 from .settings import MODEL_TREE, TREE_ITEMS_ALIASES
 
-# This allows South to handle our custom 'CharFieldNullable' field.
-if 'south' in settings.INSTALLED_APPS:
-    from south.modelsinspector import add_introspection_rules
-    add_introspection_rules([], ['^sitetree\.models\.CharFieldNullable'])
-
 
 class CharFieldNullable(models.CharField):
     """We use custom char field to put nulls in SiteTreeItem 'alias' field.
@@ -35,7 +30,7 @@ class TreeBase(models.Model):
         help_text=_('Short name to address site tree from templates.<br /><b>Note:</b> change with care.'),
         unique=True, db_index=True)
 
-    class Meta(object):
+    class Meta:
         abstract = True
         verbose_name = _('Site Tree')
         verbose_name_plural = _('Site Trees')
@@ -47,7 +42,7 @@ class TreeBase(models.Model):
         return self.alias
 
     def delete(self, using=None, keep_parents=False):
-        from sitetreeapp import Cache
+        from .sitetreeapp import Cache
         Cache().empty()
         return super(TreeBase, self).delete()
 
@@ -79,7 +74,7 @@ class TreeItemBase(models.Model):
         db_index=True, default=False)
     tree = models.ForeignKey(
         MODEL_TREE, related_name='%(class)s_tree', verbose_name=_('Site Tree'),
-        help_text=_('Site tree this item belongs to.'), db_index=True)
+        help_text=_('Site tree this item belongs to.'), db_index=True, on_delete=models.CASCADE)
     hidden = models.BooleanField(
         _('Hidden'), help_text=_('Whether to show this item in navigation.'), db_index=True, default=False)
     alias = CharFieldNullable(
@@ -123,7 +118,7 @@ class TreeItemBase(models.Model):
     # This is the current approach of tree representation for sitetree.
     parent = models.ForeignKey(
         'self', related_name='%(class)s_parent', verbose_name=_('Parent'),
-        help_text=_('Parent site tree item.'), db_index=True, null=True, blank=True)
+        help_text=_('Parent site tree item.'), db_index=True, null=True, blank=True, on_delete=models.CASCADE)
     sort_order = models.IntegerField(
         _('Sort order'),
         help_text=_('Item position among other site tree items under the same parent.'), db_index=True, default=0)
@@ -136,12 +131,12 @@ class TreeItemBase(models.Model):
         # the sitetree (and possibly the entire site).
         if self.parent == self:
             self.parent = None
-        
+
         # Set item's sort order to its primary key.
         id_ = self.id
         if id_ and self.sort_order == 0:
             self.sort_order = id_
-        
+
         super(TreeItemBase, self).save(force_insert, force_update, **kwargs)
 
         # Set item's sort order to its primary key if not already set.
@@ -150,11 +145,11 @@ class TreeItemBase(models.Model):
             self.save()
 
     def delete(self, using=None, keep_parents=False):
-        from sitetreeapp import Cache
+        from .sitetreeapp import Cache
         Cache().empty()
         return super(TreeItemBase, self).delete()
 
-    class Meta(object):
+    class Meta:
         abstract = True
         verbose_name = _('Site Tree Item')
         verbose_name_plural = _('Site Tree Items')

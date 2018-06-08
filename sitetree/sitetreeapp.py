@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 import time
 import warnings
@@ -244,7 +244,7 @@ def compose_dynamic_tree(src, target_tree_alias=None, parent_tree_item_alias=Non
 
 
 @python_2_unicode_compatible
-class LazyTitle(object):
+class LazyTitle:
     """Lazily resolves any variable found in a title of an item.
     Produces resolved title as unicode representation."""
 
@@ -267,7 +267,7 @@ class LazyTitle(object):
         return self.__str__() == other
 
 
-class Cache(object):
+class Cache:
     """Contains cache-related stuff."""
 
     def __init__(self):
@@ -330,7 +330,7 @@ class Cache(object):
         self.cache[entry_name][key] = value
 
 
-class SiteTree(object):
+class SiteTree:
 
     def __init__(self):
         self.cache = Cache()
@@ -353,7 +353,7 @@ class SiteTree(object):
     @classmethod
     def get_global_context(cls):
         """Returns current sitetree global context."""
-        return getattr(_THREAD_LOCAL, _THREAD_CONTEXT, None) or cls.set_global_context(Context())
+        return getattr(_THREAD_LOCAL, _THREAD_CONTEXT, None) or cls.set_global_context({})
 
     def resolve_tree_i18n_alias(self, alias):
         """Resolves internationalized tree alias.
@@ -479,7 +479,7 @@ class SiteTree(object):
 
                 if not hasattr(item, 'depth'):
                     item.depth = self.calculate_item_depth(alias, item.id)
-                item.depth_range = range(item.depth)
+                item.depth_range = list(range(item.depth))
 
                 # Resolve item permissions.
                 if item.access_restricted:
@@ -547,6 +547,7 @@ class SiteTree(object):
                     urls_cache[url_item][1].is_current = False
                     if urls_cache[url_item][0] == current_url:
                         current_item = urls_cache[url_item][1]
+                        break
 
         if current_item is not None:
             current_item.is_current = True
@@ -608,7 +609,7 @@ class SiteTree(object):
             if VERSION >= (1, 5, 0):  # "new-style" url tag - consider sitetree named urls literals.
                 view_path = "'%s'" % view_path
 
-            url_pattern = u'%s %s' % (view_path, ' '.join(all_arguments))
+            url_pattern = '%s %s' % (view_path, ' '.join(all_arguments))
         else:
             url_pattern = str(sitetree_item.url)
 
@@ -626,7 +627,7 @@ class SiteTree(object):
         else:
             if sitetree_item.urlaspattern:
                 # Form token to pass to Django 'url' tag.
-                url_token = u'url %s as item.url_resolved' % url_pattern
+                url_token = 'url %s as item.url_resolved' % url_pattern
                 url_tag(
                     Parser(None),
                     Token(token_type=TOKEN_BLOCK, contents=url_token)
@@ -758,7 +759,7 @@ class SiteTree(object):
     def check_access(self, item, context):
         """Checks whether a current user has an access to a certain item."""
 
-        authenticated = self.get_global_context()['request'].user.is_authenticated()
+        authenticated = self.get_global_context()['request'].user.is_authenticated
 
         if item.access_loggedin and not authenticated:
             return False
@@ -821,7 +822,7 @@ class SiteTree(object):
 
         my_template = get_template(use_template)
         context.update({'sitetree_items': tree_items})
-        return my_template.render(context)
+        return my_template.render(context.flatten())
 
     def get_children(self, tree_alias, item):
         if not self.current_app_is_admin():
